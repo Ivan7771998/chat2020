@@ -131,7 +131,13 @@ public class Controller implements Initializable {
                                     }
                                 });
                             }
-
+                            if (str.startsWith("/nick ")) {
+                                String[] token = str.split(" ");
+                                nickname = token[1];
+                                setTitle("chat 2020 : " + nickname);
+                                System.out.println(nickname);
+                            }
+                            System.out.println(str);
                         } else {
                             textArea.appendText(str + "\n");
                         }
@@ -220,8 +226,8 @@ public class Controller implements Initializable {
         return stage;
     }
 
-    public void tryRegistr(String login, String password, String nickname){
-        String msg = String.format("/reg %s %s %s",login, password, nickname );
+    public void tryRegistr(String login, String password, String nickname) {
+        String msg = String.format("/reg %s %s %s", login, password, nickname);
 
         if (socket == null || socket.isClosed()) {
             connect();
