@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.sql.SQLException;
 
 public class ClientHandler {
     Socket socket = null;
@@ -83,17 +84,29 @@ public class ClientHandler {
                                     server.privateMsg(this, token[1], token[2]);
                                 }
                             }
+                            if (str.startsWith("/ch ")) {
+                                String[] token = str.split(" ", 5);
+                                if (token.length == 3) {
+                                    try {
+                                        server.getAuthService().changeNickName(token[1], token[2]);
+                                        server.sendChangeNick(token[1], token[2]);
+                                        server.unsubscribe(this);
+                                        server.subscribe(this);
+                                    } catch (Exception e) {
+                                        server.sendChangeNickError(token[1]);
+                                    }
+                                }
+                            }
                         } else {
                             server.broadcastMsg(nick, str);
                         }
-
-
                     }
-                }catch (SocketTimeoutException e){
+                } catch (SocketTimeoutException e) {
                     System.out.println("Клиент отключился по таймауту");
                 } catch (RuntimeException e) {
+                    e.printStackTrace();
                     System.out.println("сами вызвали исключение.");
-                } catch (IOException e) {
+                } catch (IOException | SQLException e) {
                     e.printStackTrace();
                 } finally {
                     server.unsubscribe(this);
@@ -120,7 +133,6 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void sendMsg(String msg) {
@@ -133,6 +145,10 @@ public class ClientHandler {
 
     public String getNick() {
         return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
     }
 
     public String getLogin() {

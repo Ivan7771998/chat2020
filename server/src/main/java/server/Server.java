@@ -44,6 +44,26 @@ public class Server {
         }
     }
 
+    public void sendChangeNick(String login, String newNick) {
+        for (ClientHandler c : clients) {
+            if (c.getLogin().equals(login)) {
+                c.sendMsg("/nick " + newNick);
+                c.setNick(newNick);
+                c.sendMsg("Ник изменен!");
+                return;
+            }
+        }
+    }
+
+    public void sendChangeNickError(String login) {
+        for (ClientHandler c : clients) {
+            if (c.getLogin().equals(login)) {
+                c.sendMsg("Ошибка, изменения ника пользователя!");
+                return;
+            }
+        }
+    }
+
     public void broadcastMsg(String nick, String msg) {
         for (ClientHandler c : clients) {
             c.sendMsg(nick + " : " + msg);
